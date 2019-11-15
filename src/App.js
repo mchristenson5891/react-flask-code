@@ -1,15 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Register from './Register';
 import DogContainer from './DogContainer';
+import { Route, Switch } from 'react-router-dom';
+import Header from './Header'
 
-
-function App() {
+const My404 = () => {
   return (
-    <div className="App">
-      <DogContainer />
+    <div>
+      You are Lost
     </div>
-  );
-}
+    )
+};
+
+const App = () => {
+  return (
+    <main>
+      <Header />
+      <Switch>
+        <Route exact path="/" component={ Register } />
+        <Route exact path="/dogs" component={ DogContainer } />
+        <Route component={My404} />
+      </Switch>
+    </main>
+    )
+};
 
 export default App;

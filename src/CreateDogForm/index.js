@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { Form, Button, Label, Segment } from 'semantic-ui-react';
 
 class CreateDog extends Component {
   constructor(){
@@ -16,18 +16,18 @@ class CreateDog extends Component {
   }
   render(){
     return (
-      <React.Fragment>
+      <Segment>
         <h4>Create Dog</h4>
-        <form onSubmit={(e) => this.props.addDog(e, this.state)}>
-          <label>Dog:</label>
-          <input type='text' name='name' value={this.state.name} onChange={this.handleChange}/>
-          <label>Owner:</label>
-          <input type='text' name='owner' value={this.state.owner} onChange={this.handleChange}/>
-          <label>Breed:</label>
-          <input type='text' name='breed' value={this.state.breed} onChange={this.handleChange}/>
-          <button type='Submit'>Create Dog</button>
-        </form>
-      </React.Fragment>
+        <Form onSubmit={(e) => this.props.addDog(e, this.state)}>
+          <Label>Dog:</Label>
+          <Form.Input type='text' name='name' value={this.state.name} onChange={this.handleChange}/>
+          <Label>Owner:</Label>
+          <Form.Input type='text' name='owner' value={this.state.owner} onChange={this.handleChange}/>
+          <Label>Breed:</Label>
+          <Form.Input type='text' name='breed' value={this.state.breed} onChange={this.handleChange}/>
+          <Button type='Submit'>Create Dog</Button>
+        </Form>
+      </Segment>
       )
   }
 }

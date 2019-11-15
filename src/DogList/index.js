@@ -1,23 +1,27 @@
 import React from 'react';
-
+import { Card, Button} from 'semantic-ui-react';
 
 function DogList(props){
 
   const dogs = props.dogs.map((dog) => {
     return (
-        <li key={dog.id}>
-          <h6>{dog.name}</h6>
-          <span>{dog.breed}</span>
-          <button onClick={() => props.deleteDog(dog.id)}>DeleteDog</button>
-        </li>)
+        <Card key={dog.id}>
+          <Card.Content>
+            <Card.Header>{dog.name}</Card.Header>
+            <Card.Description>{dog.breed}</Card.Description>
+          </Card.Content>
+          <Card.Content extra>
+            <Button onClick={() => props.deleteDog(dog.id)}>DeleteDog</Button>
+            <Button onClick={() => props.openAndEdit(dog)}>Edit Dog</Button>
+          </Card.Content>
+        </Card>
+        )
   })
 
   return (
-
-      <ul>
+      <Card.Group>
         { dogs }
-      </ul>
-
+      </Card.Group>
     )
 }
 

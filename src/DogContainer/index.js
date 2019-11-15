@@ -1,13 +1,23 @@
 import React, { Component } from 'react';
 import DogList from '../DogList';
 import CreateDogForm from '../CreateDogForm';
+import { Grid } from 'semantic-ui-react';
+import EditDogModal from '../EditDogModal';
+
 
 class DogContainer extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      dogs: []
+      dogs: [],
+      dogToEdit: {
+        name: '',
+        breed: '',
+        owner: '',
+        id: ''
+      },
+      showEditModal: false
     }
   }
   componentDidMount(){
@@ -16,7 +26,10 @@ class DogContainer extends Component {
   getDogs = async () => {
 
     try {
-      const dogs = await fetch(process.env.REACT_APP_API_URL + '/api/v1/dogs/');
+      const dogs = await fetch(process.env.REACT_APP_API_URL + '/api/v1/dogs/', {
+        credentials: 'include',
+        method: 'Get'
+      });
       const parsedDogs = await dogs.json();
       console.log(parsedDogs);
       this.setState({
@@ -65,7 +78,8 @@ class DogContainer extends Component {
 
     console.log(id)
     const deleteDogResponse = await fetch(process.env.REACT_APP_API_URL + '/api/v1/dogs/' + id, {
-                                              method: 'DELETE'
+                                              method: 'DELETE',
+                                              credentials: 'include'
                                             });
 
     // This is the parsed response from dog
@@ -77,12 +91,77 @@ class DogContainer extends Component {
     console.log(deleteDogParsed, ' response from Flask server')
       // Then make the delete request, then remove the dog from the state array using filter
   }
+  closeAndEdit = async (e) => {
+    // Put request,
+    e.preventDefault();
+    // then update state
+    try {
+
+      const editResponse = await fetch(process.env.REACT_APP_API_URL + '/api/v1/dogs/' + this.state.dogToEdit.id, {
+        method: 'PUT',
+        body: JSON.stringify(this.state.dogToEdit),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const editResponseParsed = await editResponse.json();
+      console.log(editResponseParsed, ' parsed edit')
+
+      const newDogArrayWithEdit = this.state.dogs.map((dog) => {
+
+        if(dog.id === editResponseParsed.data.id){
+          dog = editResponseParsed.data
+        }
+
+        return dog
+      });
+
+      this.setState({
+        showEditModal: false,
+        dogs: newDogArrayWithEdit
+      });
+
+
+    } catch(err){
+      console.log(err)
+    }
+
+
+  }
+  openAndEdit = (dogFromTheList) => {
+    console.log(dogFromTheList, ' dogToEdit  ');
+
+
+    this.setState({
+      showEditModal: true,
+      dogToEdit: {
+        ...dogFromTheList
+      }
+    })
+  }
+  handleEditChange = (e) => {
+
+    this.setState({
+      dogToEdit: {
+        ...this.state.dogToEdit,
+        [e.currentTarget.name]: e.currentTarget.value
+      }
+    });
+  }
   render(){
     return (
-      <React.Fragment>
-        <DogList dogs={this.state.dogs} deleteDog={this.deleteDog}/>
-        <CreateDogForm addDog={this.addDog}/>
-      </React.Fragment>
+      <Grid columns={2} divided textAlign='center' style={{ height: '100%' }} verticalAlign='top' stackable>
+        <Grid.Row>
+          <Grid.Column>
+            <DogList dogs={this.state.dogs} deleteDog={this.deleteDog} openAndEdit={this.openAndEdit}/>
+          </Grid.Column>
+          <Grid.Column>
+           <CreateDogForm addDog={this.addDog}/>
+          </Grid.Column>
+          <EditDogModal handleEditChange={this.handleEditChange} open={this.state.showEditModal} dogToEdit={this.state.dogToEdit} closeAndEdit={this.closeAndEdit}/>
+        </Grid.Row>
+      </Grid>
       )
   }
 }
